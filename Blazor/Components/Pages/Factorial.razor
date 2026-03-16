@@ -1,0 +1,41 @@
+﻿@page "/factorial"
+@rendermode InteractiveServer
+
+@using System.Numerics;
+
+<PageTitle>Factorial</PageTitle>
+
+<h3>Factorial</h3>
+
+<div class="factorial">
+	<input type="number" min="0" @bind="number" @bind:after="Calc" />
+	<div id="factorial">@factorial</div>
+</div>
+<ol>
+	@{
+		foreach(BigInteger i in results)
+		{
+			<li>@i</li>
+		}
+	}
+</ol>
+
+@code {
+	int number;
+	BigInteger factorial = 1;
+	List<BigInteger> results = new List<BigInteger>();
+	void setNumber(int number)
+	{
+		this.number = number;
+	}
+	void Calc()
+	{
+		factorial = 1;
+		results = new List<BigInteger>();
+		for(int i = 1; i <= number; i++)
+		{
+			factorial *= i;
+			results.Add(factorial);
+		}
+	}
+}
