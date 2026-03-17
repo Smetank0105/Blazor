@@ -1,0 +1,21 @@
+﻿@page "/fibonacci"
+@rendermode InteractiveServer
+
+@using System.Numerics;
+
+<PageTitle>Fibonacci</PageTitle>
+
+<h3>Fibonacci</h3>
+
+<div class="fibonacci">
+	<label for="in-number">Количество чисел:</label>
+	<input type="number" name="in-number" min="2" @bind="number" @bind:after="GetFibonacci" />
+</div>
+<ol>
+	@{
+		foreach(BigInteger i in result)
+		{
+			<li>@i</li>
+		}
+	}
+</ol>

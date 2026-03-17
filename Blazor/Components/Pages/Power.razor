@@ -1,0 +1,14 @@
+﻿@page "/power"
+@rendermode InteractiveServer
+
+<PageTitle>Power</PageTitle>
+
+<h3>Power</h3>
+
+<div class="power">
+	<label for="in-number">Число:</label>
+	<input type="number" name="in-number" @bind="number" @bind:after="RaisingToPower" />
+	<label for="in-power">Степень:</label>
+	<input type="number" name="in-power" @bind="power" @bind:after="RaisingToPower"  />
+</div>
+	<div id="power">Результат: @result</div>
