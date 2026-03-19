@@ -1,0 +1,18 @@
+﻿.converter {
+    display: flex;
+}
+.from-converter, .to-converter{
+    display:flex;
+    flex-direction:column;
+    margin:10px;
+}
+input{
+    margin-top:10px;
+}
+button{
+    width: 120px;
+    height: 32px;
+    align-self:center;
+    border:solid 1px;
+    border-radius: 8px;
+}

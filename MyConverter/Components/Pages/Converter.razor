@@ -1,0 +1,28 @@
+﻿@page "/converter"
+@rendermode InteractiveServer
+
+<PageTitle>Converter</PageTitle>
+
+<h3>Converter:</h3>
+
+<div class="converter">
+    <div class="from-converter">
+        <select @bind="from_base">
+            <option value="2">Двоичная</option>
+            <option value="8">Восьмиричная</option>
+            <option value="10">Десятичная</option>
+            <option value="16">Шестнадцатеричная</option>
+        </select>
+        <input type="text" @bind="left" />
+    </div>
+    <button @onclick="ConvertToBaseFromBase">Convert</button>
+    <div class="to-converter">
+        <select @bind="to_base">
+            <option value="2">Двоичная</option>
+            <option value="8">Восьмиричная</option>
+            <option value="10">Десятичная</option>
+            <option value="16">Шестнадцатеричная</option>
+        </select>
+        <input type="text" @bind="right" readonly />
+    </div>
+</div>
