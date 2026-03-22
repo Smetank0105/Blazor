@@ -15,7 +15,8 @@
 </p>
 
 <QuickGrid Class="table" Items="context.Movie">
-    <PropertyColumn Property="movie => movie.Title" />
+    @* <PropertyColumn Property="movie => movie.Title" /> *@
+    <TemplateColumn Title="Title"><a href=@(string.IsNullOrEmpty(context.URL) ? null : context.URL)>@context.Title</a></TemplateColumn>
     <PropertyColumn Property="movie => movie.ReleaseDate" />
     <PropertyColumn Property="movie => movie.Genre" />
     <TemplateColumn Title="Poster">
