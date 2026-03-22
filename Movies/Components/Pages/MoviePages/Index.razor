@@ -18,6 +18,18 @@
     <PropertyColumn Property="movie => movie.Title" />
     <PropertyColumn Property="movie => movie.ReleaseDate" />
     <PropertyColumn Property="movie => movie.Genre" />
+    <TemplateColumn Title="Poster">
+        <div style="text-align: center; width: 120px;">
+            @if(!string.IsNullOrEmpty(context.ImageURL))
+            {
+                <img src="@context.ImageURL" alt="Poster" style="max-width: 80px; max-height: 120px; object-fit: contain;" />
+            }
+            else
+            {
+                <span>No image</span>
+            }
+        </div>
+    </TemplateColumn>
 
     <TemplateColumn Context="movie">
         <a href="@($"movies/edit?id={movie.Id}")">Edit</a> |

@@ -3,6 +3,7 @@
 @using Movies.Models
 @inject IDbContextFactory<Movies.Data.MoviesContext> DbFactory
 @inject NavigationManager NavigationManager
+@inject IWebHostEnvironment Environment
 
 <PageTitle>Create</PageTitle>
 
@@ -35,6 +36,22 @@
                 <InputText id="URL" @bind-Value="Movie.URL" class="form-control" /> 
                 <ValidationMessage For="() => Movie.URL" class="text-danger" /> 
             </div>        
+            <div class="mb-3">
+                <label for="imageUpload" class="form-label"></label>
+                <InputFile id="imageUpload" class="form-control" OnChange="OnImageSelected" />
+                <ValidationMessage For="() => Movie.ImageURL" class="text-danger" />
+                
+                @if (!string.IsNullOrEmpty(Movie.ImageURL))
+                {
+                    <div class="mt-2">
+                        <img src="@Movie.ImageURL" alt="Preview" style="max-width: 150px; max-height: 200px;" />
+                    </div>
+                }
+                @if (uploadError != null)
+                {
+                    <div class="text-danger mt-1">@uploadError</div>
+                }
+            </div>
             <button type="submit" class="btn btn-primary">Create</button>
         </EditForm>
     </div>
@@ -47,6 +64,50 @@
 @code {
     [SupplyParameterFromForm]
     private Movie Movie { get; set; } = new();
+
+    private string? uploadError;
+
+    private async Task OnImageSelected(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        const long maxFileSize = 5 * 1024 * 1024;
+
+        if (file.Size > maxFileSize)
+        {
+            uploadError = "File is too large. Maximum size is 5 MB.";
+            Movie.ImageURL = null;
+            return;
+        }
+
+        var extension = Path.GetExtension(file.Name).ToLowerInvariant();
+        if (extension != ".jpg" && extension != ".jpeg" && extension != ".png" && extension != ".gif")
+        {
+            uploadError = "Only JPG, JPEG, PNG, and GIF files are allowed.";
+            Movie.ImageURL = null;
+            return;
+        }
+
+        var fileName = $"{Guid.NewGuid()}{extension}";
+        var folderPath = Path.Combine(Environment.WebRootPath, "images", "movies");
+        var filePath = Path.Combine(folderPath, fileName);
+
+        Directory.CreateDirectory(folderPath);
+
+        try
+        {
+            using var stream = file.OpenReadStream(maxFileSize);
+            using var fileStream = new FileStream(filePath, FileMode.Create);
+            await stream.CopyToAsync(fileStream);
+
+            Movie.ImageURL = $"/images/movies/{fileName}";
+            uploadError = null;
+        }
+        catch (Exception ex)
+        {
+            uploadError = $"Failed to save image: {ex.Message}";
+            Movie.ImageURL = null;
+        }
+    }
 
     // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
     private async Task AddMovie()

@@ -3,6 +3,7 @@
 @using Movies.Models
 @inject IDbContextFactory<Movies.Data.MoviesContext> DbFactory
 @inject NavigationManager NavigationManager
+@inject IWebHostEnvironment Environment
 
 <PageTitle>Edit</PageTitle>
 
@@ -18,7 +19,7 @@ else
 {
     <div class="row">
         <div class="col-md-4">
-            <EditForm method="post" Model="Movie" OnValidSubmit="UpdateMovie" FormName="edit" Enhance>
+            <EditForm method="post" Model="Movie" OnValidSubmit="UpdateMovie" FormName="edit" >
                 <DataAnnotationsValidator />
                 <ValidationSummary role="alert"/>
                 <input type="hidden" name="Movie.Id" value="@Movie.Id" />
@@ -42,6 +43,22 @@ else
                     <InputText id="URL" @bind-Value="Movie.URL" class="form-control" />
                     <ValidationMessage For="() => Movie.URL" class="text-danger" />
                 </div>
+                <div class="mb-3">
+                    <label for="imageUpload" class="form-label">Poster Image:</label>
+                    <InputFile id="imageUpload" OnChange="OnImageSelected" class="form-control" />
+                    <ValidationMessage For="() => Movie.ImageURL" class="text-danger" />
+                    @if(!string.IsNullOrEmpty(Movie.ImageURL))
+                    {
+                        <div>
+                            <img src="@Movie.ImageURL" alt="Current poster" style="max-wisth: 150px; max-height 200px; border: solid 1px #ddd;" />
+                            <button type="button" class="btn btn-primary" @onclick="RemoveImage">Remove Image</button>
+                        </div>
+                    }
+                    @if(uploadError != null)
+                    {
+                        <div>@uploadError</div>
+                    }
+                </div>
                 <button type="submit" class="btn btn-primary">Save</button>
             </EditForm>
         </div>
@@ -59,6 +76,9 @@ else
     [SupplyParameterFromForm]
     private Movie? Movie { get; set; }
 
+    private string? uploadError = "No Image";
+    private string? oldImageUrl;
+
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
@@ -68,7 +88,64 @@ else
         {
             NavigationManager.NavigateTo("notfound");
         }
+
+        oldImageUrl = Movie.ImageURL;
     }
+
+    private async Task OnImageSelected(InputFileChangeEventArgs e)
+    {
+        Console.WriteLine("OnImageSelected called!");
+
+        var file = e.File;
+        const long maxFileSize = 5 * 1024 * 1024;
+
+        if (file.Size > maxFileSize)
+        {
+            uploadError = "File is too large. Maximum size is 5 MB.";
+            Movie.ImageURL = null;
+            return;
+        }
+
+        var extension = Path.GetExtension(file.Name).ToLowerInvariant();
+        if (extension != ".jpg" && extension != ".jpeg" && extension != ".png" && extension != ".gif")
+        {
+            uploadError = "Only JPG, JPEG, PNG, and GIF files are allowed.";
+            Movie.ImageURL = null;
+            return;
+        }
+
+        var fileName = $"{Guid.NewGuid()}{extension}";
+        var folderPath = Path.Combine(Environment.WebRootPath, "images", "movies");
+        var filePath = Path.Combine(folderPath, fileName);
+
+        Directory.CreateDirectory(folderPath);
+
+        try
+        {
+            using var stream = file.OpenReadStream(maxFileSize);
+            using var fileStream = new FileStream(filePath, FileMode.Create);
+            await stream.CopyToAsync(fileStream);
+
+            Movie.ImageURL = $"/images/movies/{fileName}";
+            uploadError = null;
+
+            Console.WriteLine($"Image saved: {filePath}");
+        }
+        catch (Exception ex)
+        {
+            uploadError = $"Failed to save image: {ex.Message}";
+            Movie.ImageURL = null;
+
+            Console.WriteLine($"Error saving image: {ex}");
+        }
+    }
+
+    private void RemoveImage()
+    {
+        oldImageUrl = Movie.ImageURL;
+        Movie.ImageURL = null;
+    }
+
 
     // To protect from overposting attacks, enable the specific properties you want to bind to.
     // For more information, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
@@ -79,6 +156,21 @@ else
 
         try
         {
+            if (!string.IsNullOrEmpty(oldImageUrl) && !string.Equals(oldImageUrl, Movie!.ImageURL, StringComparison.OrdinalIgnoreCase))
+            {
+                var oldImagePath = Path.Combine(Environment.WebRootPath, oldImageUrl.TrimStart('/'));
+                if (File.Exists(oldImagePath))
+                {
+                    try
+                    {
+                        File.Delete(oldImagePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Warning: Could not delete old image: {oldImagePath} - {ex.Message}");
+                    }
+                }
+            }
             await context.SaveChangesAsync();
         }
         catch (DbUpdateConcurrencyException)

@@ -12,5 +12,7 @@ namespace Movies.Models
         [Required]
         public string Genre { get; set; }
         public string? URL { get; set; }
+        [StringLength(255)]
+        public string? ImageURL { get; set; }
     }
 }
