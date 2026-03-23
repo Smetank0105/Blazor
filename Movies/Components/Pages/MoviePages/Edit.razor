@@ -42,6 +42,11 @@ else
                     <InputText id="URL" @bind-Value="Movie.URL" class="form-control" />
                     <ValidationMessage For="() => Movie.URL" class="text-danger" />
                 </div>
+                <div class="mb-3">
+                    <label for="ImageURL" class="form-label">Poster:</label>
+                    <InputText id="ImageURL" @bind-Value="Movie.ImageURL" class="form-control" />
+                    <ValidationMessage For="() => Movie.ImageURL" class="text-danger" />
+                </div>
                 <button type="submit" class="btn btn-primary">Save</button>
             </EditForm>
         </div>
