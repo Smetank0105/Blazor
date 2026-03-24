@@ -1,0 +1,40 @@
+﻿@page "/directions"
+@* @rendermode InteractiveServer *@
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using HW_Academy_CRUD.Models
+@implements IAsyncDisposable
+@inject IDbContextFactory<HW_Academy_CRUD.Models.Pd321Context> DbFactory
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="directions/create">Create New</a>
+</p>
+
+<div>
+    <form action="/directions" data-enhance>
+        <input type="search" name="DirectionNameFilter" />
+        <input type="submit" value="Search" />
+    </form>
+</div>
+
+<QuickGrid Class="table" Items="FilteredDirections">
+    <TemplateColumn Title="Name"><a href="@($"directions/details?id={context.DirectionId}")">@context.DirectionName</a></TemplateColumn>
+</QuickGrid>
+
+@code {
+    private Pd321Context context = default!;
+    [SupplyParameterFromQuery]
+    string? DirectionNameFilter { get; set; }
+
+    protected override void OnInitialized()
+    {
+        context = DbFactory.CreateDbContext();
+    }
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+    IQueryable<Direction> FilteredDirections => context.Directions.Where(m => m.DirectionName.Contains(DirectionNameFilter ?? string.Empty));
+}
