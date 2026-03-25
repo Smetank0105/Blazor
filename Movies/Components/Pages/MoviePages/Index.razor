@@ -31,12 +31,14 @@
     </div>
 </div>
 
+<div>
 <QuickGrid Class="table" Items="FilteredMovies" Pagination="pagination">
-    <TemplateColumn SortBy="sortBy" Title="Title"><a href="@($"movies/details?id={context.Id}")">@context.Title</a></TemplateColumn>
-    <PropertyColumn Sortable="true" Property="movie => movie.ReleaseDate" />
-    <PropertyColumn Sortable="true" Property="movie => movie.Genre" />
+    <TemplateColumn Class="movie-title" SortBy="sortBy" Title="Title"><a href="@($"movies/details?id={context.Id}")">@context.Title</a></TemplateColumn>
+    <PropertyColumn Class="release-date" Sortable="true" Property="movie => movie.ReleaseDate" />
+    <PropertyColumn Class="genre" Sortable="true" Property="movie => movie.Genre" />
 </QuickGrid>
 <Paginator State="pagination" />
+</div>
 
 @code {
     private MoviesContext context = default!;
