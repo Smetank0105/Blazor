@@ -39,6 +39,14 @@
     [SupplyParameterFromForm]
     private Direction Direction { get; set; } = new();
 
+    protected override void OnInitialized()
+    {
+        using (Academy_2.Data.Academy_2Context context = DbFactory.CreateDbContext())
+        {
+            ID = context.Directions.Max(d => d.direction_id) + 1;
+        }
+    }
+
     int id;
     int ID { get => Direction.direction_id; set => Direction.direction_id = (byte)(id = value); }
 
@@ -46,6 +54,7 @@
     private async Task AddDirection()
     {
         using var context = DbFactory.CreateDbContext();
+        // if (context.Directions.Contains(Direction)) return;
         context.Directions.Add(Direction);
         await context.SaveChangesAsync();
         NavigationManager.NavigateTo("/directions");
