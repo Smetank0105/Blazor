@@ -8,9 +8,7 @@
 }
 ::deep .movie-title{
     width:50%;
-
 }
 ::deep .release-date, ::deep .genre{
     width: 25%;
-
 }

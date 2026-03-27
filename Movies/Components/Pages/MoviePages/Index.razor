@@ -32,7 +32,7 @@
 </div>
 
 <div>
-<QuickGrid Class="table" Items="FilteredMovies" Pagination="pagination">
+<QuickGrid Class="table" Theme="default" Items="FilteredMovies" Pagination="pagination">
     <TemplateColumn Class="movie-title" SortBy="sortBy" Title="Title"><a href="@($"movies/details?id={context.Id}")">@context.Title</a></TemplateColumn>
     <PropertyColumn Class="release-date" Sortable="true" Property="movie => movie.ReleaseDate" />
     <PropertyColumn Class="genre" Sortable="true" Property="movie => movie.Genre" />
