@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 
 namespace Academy_2.Components.Models
 {
@@ -9,13 +10,6 @@ namespace Academy_2.Components.Models
         [Required]
         [UniqueDirectionName(errorMessage: "Error: Такое направление уже существует")]
         public string direction_name { get; set; }
-        //public override bool Equals(object? obj)
-        //{
-        //    return this.direction_name.Equals((obj as Direction).direction_name);
-        //}
-        //public override int GetHashCode()
-        //{
-        //    return HashCode.Combine(direction_name);
-        //}
+        public List<Group> Groups { get; set; } = new List<Group>();
     }
 }
