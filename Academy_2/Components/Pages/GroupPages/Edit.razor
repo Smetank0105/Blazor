@@ -1,5 +1,5 @@
 ﻿@page "/groups/edit"
-@* @rendermode InteractiveServer *@
+@rendermode InteractiveServer
 @using Microsoft.EntityFrameworkCore
 @using Academy_2.Components.Models
 @inject IDbContextFactory<Academy_2.Data.Academy_2Context> DbFactory
@@ -30,18 +30,35 @@ else
                 </div>
                 <div class="mb-3">
                     <label for="direction" class="form-label">direction:</label>
-                    <InputNumber id="direction" @bind-Value="Direction" class="form-control" />
+                    <br />
+                    <InputSelect id="direction" @bind-Value="Direction">
+                        @using (var context = DbFactory.CreateDbContext())
+                        {
+                            @foreach(var dir in context.Directions)
+                            {
+                                <option value="@dir.direction_id">@dir.direction_name</option>
+                            }
+                        }
+                    </InputSelect>
                     <ValidationMessage For="() => Group.direction" class="text-danger" />
                 </div>
                 <div class="mb-3">
                     <label for="learning_days" class="form-label">learning_days:</label>
+                    <div style="display:flex; flex-direction:column;border:1px solid gray;padding:5px;">
+                        @foreach(var day in Learning_days_list)
+                        {
+                            <div style="display:flex; justify-content:space-between;">
+                                <label for="@day.Name">@day.Name</label>
+                                <input type="checkbox" id="@day.Name" @bind="@day.IsWorking" @bind:after="CalculateToLearningdays" />
+                            </div>
+                        }
+                    </div>
                     <InputNumber id="learning_days" @bind-Value="Learning_days" class="form-control" />
-                    <ValidationMessage For="() => Group.learning_days" class="text-danger" />
+                    <ValidationMessage For="() => Learning_days" class="text-danger" />
                 </div>
                 <div class="mb-3">
                     <label for="start_time" class="form-label">Время начала:</label>
-                    <InputDate id="start_time" @bind-Value="Group.start_time" class="form-control" />
-                    @* <InputDate id="start_time" @bind-Value="Group.start_time" Type="InputDateType.Time" class="form-control" /> *@
+                    <InputDate id="start_time" @bind-Value="Group.start_time" Type="InputDateType.Time" class="form-control" />
                     <ValidationMessage For="() => Group.start_time" class="text-danger" />
                 </div>
 
@@ -62,6 +79,23 @@ else
     [SupplyParameterFromForm]
     private Group? Group { get; set; }
 
+    private List<DayInfo> Learning_days_list = new List<DayInfo>
+    {
+        new DayInfo { Name = "Понедельник", IsWorking = false },
+        new DayInfo { Name = "Вторник", IsWorking = false },
+        new DayInfo { Name = "Среда", IsWorking = false },
+        new DayInfo { Name = "Четверг", IsWorking = false },
+        new DayInfo { Name = "Пятница", IsWorking = false },
+        new DayInfo { Name = "Суббота", IsWorking = false },
+        new DayInfo { Name = "Воскресенье", IsWorking = false },
+    };
+
+    private class DayInfo
+    {
+        public string Name { get; set; }
+        public bool IsWorking { get; set; }
+    }
+
     byte direction;
     byte learning_days;
     public int Direction { get => direction; set => Group.direction = (direction = (byte)value); }
@@ -78,6 +112,7 @@ else
         }
         Direction = Group.direction;
         Learning_days = Group.learning_days;
+        CalculateFromLearningdays(Learning_days);
     }
 
     // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -110,5 +145,28 @@ else
     {
         using var context = DbFactory.CreateDbContext();
         return context.Groups.Any(e => e.group_id == group_id);
+    }
+
+    private void CalculateToLearningdays()
+    {
+        byte result = 0;
+        for(int i =0; i < 7; i++)
+        {
+            if (Learning_days_list[i].IsWorking)
+            {
+                result |= (byte)(1 << i);
+            }
+        }
+        Learning_days = result;
+    }
+
+    private void CalculateFromLearningdays(int days)
+    {
+        for(int i = 0; i < 7; i++)
+        {
+            if (days % 2 == 1)
+                Learning_days_list[i].IsWorking = true;
+            days = days/2;
+		}
     }
 }
