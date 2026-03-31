@@ -1,4 +1,5 @@
 ﻿@page "/groups/create"
+@rendermode InteractiveServer
 @using Microsoft.EntityFrameworkCore
 @using Academy_2.Components.Models
 @inject IDbContextFactory<Academy_2.Data.Academy_2Context> DbFactory
@@ -22,17 +23,35 @@
             </div>        
             <div class="mb-3">
                 <label for="direction" class="form-label">direction:</label> 
-                <InputNumber id="direction" @bind-Value="Group.direction" class="form-control" /> 
+                <br />
+                    <InputSelect id="direction" @bind-Value="Direction">
+                        @using (var context = DbFactory.CreateDbContext())
+                        {
+                            @foreach(var dir in context.Directions)
+                            {
+                                <option value="@dir.direction_id">@dir.direction_name</option>
+                            }
+                        }
+                    </InputSelect> 
                 <ValidationMessage For="() => Group.direction" class="text-danger" /> 
             </div>        
             <div class="mb-3">
-                <label for="learning_days" class="form-label">learning_days:</label> 
-                <InputNumber id="learning_days" @bind-Value="Group.learning_days" class="form-control" /> 
+                <label for="learning_days" class="form-label">learning_days:</label>
+                <div style="display:flex; flex-direction:column;border:1px solid gray;padding:5px;">
+                    @foreach(var day in Learning_days_list)
+                    {
+                        <div style="display:flex; justify-content:space-between;">
+                            <label for="@day.Name">@day.Name</label>
+                            <input type="checkbox" id="@day.Name" @bind="@day.IsWorking" @bind:after="CalculateToLearningdays" />
+                        </div>
+                    }
+                </div>
+                <InputNumber id="learning_days" @bind-Value="Learning_days" class="form-control" /> 
                 <ValidationMessage For="() => Group.learning_days" class="text-danger" /> 
             </div>        
             <div class="mb-3">
                 <label for="start_time" class="form-label">start_time:</label> 
-                <InputDate id="start_time" @bind-Value="Group.start_time" class="form-control" /> 
+                <InputDate id="start_time" @bind-Value="Group.start_time" Type="InputDateType.Time" class="form-control" />
                 <ValidationMessage For="() => Group.start_time" class="text-danger" /> 
             </div>        
             <button type="submit" class="btn btn-primary">Create</button>
@@ -48,6 +67,28 @@
     [SupplyParameterFromForm]
     private Group Group { get; set; } = new();
 
+    private List<DayInfo> Learning_days_list = new List<DayInfo>
+    {
+        new DayInfo { Name = "Понедельник", IsWorking = false },
+        new DayInfo { Name = "Вторник", IsWorking = false },
+        new DayInfo { Name = "Среда", IsWorking = false },
+        new DayInfo { Name = "Четверг", IsWorking = false },
+        new DayInfo { Name = "Пятница", IsWorking = false },
+        new DayInfo { Name = "Суббота", IsWorking = false },
+        new DayInfo { Name = "Воскресенье", IsWorking = false },
+    };
+
+    private class DayInfo
+    {
+        public string Name { get; set; }
+        public bool IsWorking { get; set; }
+    }
+
+    byte direction;
+    byte learning_days;
+    public int Direction { get => direction; set => Group.direction = (direction = (byte)value); }
+    public int Learning_days { get => learning_days; set => Group.learning_days = (learning_days = (byte)value); }
+
     // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
     private async Task AddGroup()
     {
@@ -55,5 +96,18 @@
         context.Groups.Add(Group);
         await context.SaveChangesAsync();
         NavigationManager.NavigateTo("/groups");
+    }
+
+        private void CalculateToLearningdays()
+    {
+        byte result = 0;
+        for(int i =0; i < 7; i++)
+        {
+            if (Learning_days_list[i].IsWorking)
+            {
+                result |= (byte)(1 << i);
+            }
+        }
+        Learning_days = result;
     }
 }
