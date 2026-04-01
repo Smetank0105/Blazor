@@ -27,10 +27,24 @@
                 <InputText id="group_name" @bind-Value="Group.group_name" class="form-control" aria-required="true"/> 
                 <ValidationMessage For="() => Group.group_name" class="text-danger" /> 
             </div>        
-            <div class="mb-3">
+            @* <div class="mb-3">
                 <span class="text-danger">*</span>
                 <label for="direction" class="form-label">direction:</label> 
                 <InputNumber id="direction" @bind-Value="Group.direction" class="form-control" aria-required="true"/> 
+                <ValidationMessage For="() => Group.direction" class="text-danger" /> 
+            </div>  *@       
+            <div class="mb-3">
+                <span class="text-danger">*</span>
+                <label for="direction" class="form-label">direction:</label> 
+                <InputSelect id="direction" @bind-Value="Group.direction" class="form-control" aria-required="true">
+                    @using (var context = DbFactory.CreateDbContext())
+                    {
+                        @foreach(Direction d in context.Directions)
+                        {
+                            <option value="@d.direction_id">@d.direction_name</option>
+                        }
+                    }
+                </InputSelect>
                 <ValidationMessage For="() => Group.direction" class="text-danger" /> 
             </div>        
             <div class="mb-3">
@@ -56,9 +70,12 @@
     [SupplyParameterFromForm]
     private Group Group { get; set; } = new();
 
-    // protected override async Task OnInitializedAsync()
+
+    // IQueryable<Direction> Directions { get; set; } = default!;
+
+    // protected override void OnInitialized()
     // {
-        
+    //     Directions = DbFactory.CreateDbContext().Directions;
     // }
 
     // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
