@@ -12,7 +12,6 @@ namespace Academy_2.Components.Models
         public byte direction { get; set; }
         public byte learning_days { get; set; }
         public TimeOnly start_time { get; set; }
-        [Required]
         public Direction Direction { get; set; }
     }
 }
