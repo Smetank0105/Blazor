@@ -1,4 +1,5 @@
 ﻿@page "/groups/edit"
+@rendermode InteractiveServer
 @using Microsoft.EntityFrameworkCore
 @using Academy_3.Components.Models
 @inject IDbContextFactory<Academy_3.Data.Academy_3Context> DbFactory
@@ -36,7 +37,8 @@ else
                 </div>
                 <div class="mb-3">
                     <label for="learning_days" class="form-label">learning_days:</label>
-                    <InputNumber id="learning_days" @bind-Value="Group.learning_days" class="form-control" />
+                    @* <InputNumber id="learning_days" @bind-Value="Group.learning_days" class="form-control" /> *@
+                    <Weekdays @bind-Value="Group.learning_days" />
                     <ValidationMessage For="() => Group.learning_days" class="text-danger" />
                 </div>
                 <div class="mb-3">
