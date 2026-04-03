@@ -3,6 +3,7 @@
 @using Academy_3.Components.Models
 @inject IDbContextFactory<Academy_3.Data.Academy_3Context> DbFactory
 @inject NavigationManager NavigationManager
+@rendermode InteractiveServer
 
 <PageTitle>Create</PageTitle>
 
@@ -47,7 +48,7 @@
                 </InputSelect>
                 <ValidationMessage For="() => Group.direction" class="text-danger" /> 
             </div>
-            <Weekdays />
+            <Weekdays Group="Group"/>
             <div class="mb-3">
                 <label for="learning_days" class="form-label">learning_days:</label> 
                 <InputNumber id="learning_days" @bind-Value="Group.learning_days" class="form-control" /> 
