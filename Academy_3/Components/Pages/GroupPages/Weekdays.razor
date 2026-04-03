@@ -1,5 +1,4 @@
-﻿@* @rendermode InteractiveServer *@
-<h3>Weekdays</h3>
+﻿<h3>Weekdays</h3>
 
 <ul class="weekdays form-control">
     @for(int i=0;i<7;i++)
@@ -32,5 +31,19 @@
                 mask |= (byte)(1 << i) ;
         }
         Group.learning_days = mask;
+    }
+
+    void Extract()
+    {
+        for(int i = 0; i < 7; i++)
+        {
+            if ((Group.learning_days >> i & 1) != 0) days[i] = true;
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        Extract();
+        // base.OnInitialized();
     }
 }

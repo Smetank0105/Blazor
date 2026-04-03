@@ -3,6 +3,7 @@
 @using Academy_3.Components.Models
 @inject IDbContextFactory<Academy_3.Data.Academy_3Context> DbFactory
 @inject NavigationManager NavigationManager
+@rendermode InteractiveServer
 
 <PageTitle>Edit</PageTitle>
 
@@ -30,13 +31,22 @@ else
                 </div>
                 <div class="mb-3">
                 <span class="text-danger">*</span>
-                    <label for="direction" class="form-label">direction:</label>
-                    <InputNumber id="direction" @bind-Value="Group.direction" class="form-control" aria-required="true"/>
-                    <ValidationMessage For="() => Group.direction" class="text-danger" />
-                </div>
+                <label for="direction" class="form-label">direction:</label> 
+                <InputSelect id="direction" @bind-Value="Group.direction" class="form-control" aria-required="true">
+                    @using (var context = DbFactory.CreateDbContext())
+                    {
+                        @foreach(Direction d in context.Directions)
+                        {
+                            <option value="@d.direction_id">@d.direction_name</option>
+                        }
+                    }
+                </InputSelect>
+                <ValidationMessage For="() => Group.direction" class="text-danger" /> 
+            </div>
                 <div class="mb-3">
                     <label for="learning_days" class="form-label">learning_days:</label>
-                    <InputNumber id="learning_days" @bind-Value="Group.learning_days" class="form-control" />
+                    <Weekdays Group="Group"/>
+                    @* <InputNumber id="learning_days" @bind-Value="Group.learning_days" class="form-control" /> *@
                     <ValidationMessage For="() => Group.learning_days" class="text-danger" />
                 </div>
                 <div class="mb-3">
