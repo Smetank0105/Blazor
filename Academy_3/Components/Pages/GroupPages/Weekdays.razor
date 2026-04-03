@@ -6,7 +6,7 @@
     {
         int index = i;
         <li>
-            <input type="checkbox" @bind="learning_days[index]" @bind:after="Compress" id="@DAYNAMES[index]" /><label for="@DAYNAMES[index]">@DAYNAMES[index]</label>
+            <input type="checkbox" @bind="days[index]" @bind:after="Compress" id="@DAYNAMES[index]" /><label for="@DAYNAMES[index]">@DAYNAMES[index]</label>
        </li>
     }
 </ul>
@@ -17,7 +17,7 @@
 
 @code {
     readonly string[] DAYNAMES = { "Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс" };
-    bool[] learning_days = new bool[7];
+    bool[] days = new bool[7];
 
     [Parameter]
     public Models.Group Group { get; set; }
@@ -25,14 +25,10 @@
     int mask = 0;
     void Compress()
     {
-        // for(int i = 0; i < 7; i++)
-        // {
-        //     mask |= (1 << i) & Convert.ToByte(learning_days[i]);
-        // }
         mask = 0;
         for(int i = 0; i < 7; i++)
         {
-            if(learning_days[i])
+            if(days[i])
                 mask |= (byte)(1 << i) ;
         }
         Group.learning_days = mask;
