@@ -1,15 +1,16 @@
 ﻿@page "/directions/details"
 @using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
 @using Academy_3.Components.Models
 @inject IDbContextFactory<Academy_3.Data.Academy_3Context> DbFactory
 @inject NavigationManager NavigationManager
 
-<PageTitle>Details</PageTitle>
+<PageTitle>@direction?.direction_name Details</PageTitle>
 
-<h1>Details</h1>
+<h1>@direction?.direction_name Details</h1>
 
 <div>
-    <h2>Direction</h2>
+    @* <h2>Direction</h2> *@
     <hr />
     @if (direction is null)
     {
@@ -20,6 +21,13 @@
             <dt class="col-sm-2">direction_name</dt>
             <dd class="col-sm-10">@direction.direction_name</dd>
         </dl>
+        <h5>Количество групп: @direction.Groups.Count()</h5>
+        <ul style="list-style:none;">
+            @foreach(var g in direction.Groups)
+            {
+                <li>@g.group_name</li>
+            }
+        </ul>
         <div>
             <a href="@($"/directions/edit?directuin_id={direction.direction_id}")">Edit</a> |
             <a href="@($"/directions")">Back to List</a>
@@ -36,7 +44,7 @@
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
-        direction = await context.Directions.FirstOrDefaultAsync(m => m.direction_id == directuin_id);
+        direction = await context.Directions.Include(d => d.Groups).FirstOrDefaultAsync(m => m.direction_id == directuin_id);
 
         if (direction is null)
         {
