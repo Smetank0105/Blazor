@@ -16,5 +16,6 @@ namespace Academy_3.Components.Models
         public TimeOnly start_time { get; set; }
         //[Required]
         public Direction? Direction { get; set; }
+        public ICollection<Student> Students { get; set; } = new List<Student>();
     }
 }

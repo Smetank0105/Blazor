@@ -19,6 +19,8 @@
         <dl class="row">
             <dt class="col-sm-2">group_name</dt>
             <dd class="col-sm-10">@group.group_name</dd>
+            <dt class="col-sm-2">Количество студентов:</dt>
+            <dd class="col-sm-10">@group.Students.Count()</dd>
             <dt class="col-sm-2">direction</dt>
             <dd class="col-sm-10">@group.Direction.direction_name</dd>
             <dt class="col-sm-2">learning_days</dt>
@@ -26,6 +28,13 @@
             <dt class="col-sm-2">start_time</dt>
             <dd class="col-sm-10">@group.start_time</dd>
         </dl>
+        <h5>Студенты:</h5>
+        <ul style="list-style:none;">
+            @foreach(var s in group.Students)
+            {
+                <li>@s.last_name @s.first_name @s.middle_name</li>
+            }
+        </ul>
         <div>
             <a href="@($"/groups/edit?group_id={group.group_id}")">Edit</a> |
             <a href="@($"/groups")">Back to List</a>
@@ -42,7 +51,11 @@
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
-        group = await context.Groups.Include(g => g.Direction).FirstOrDefaultAsync(m => m.group_id == group_id);
+        group = await context
+                        .Groups
+                        .Include(g => g.Direction)
+                        .Include(g => g.Students)
+                        .FirstOrDefaultAsync(m => m.group_id == group_id);
 
         if (group is null)
         {
