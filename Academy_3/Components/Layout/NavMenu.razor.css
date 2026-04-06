@@ -103,3 +103,7 @@
         overflow-y: auto;
     }
 }
+
+.academy-nav-menu{
+    list-style:none;
+}
