@@ -30,7 +30,16 @@
             <dt class="col-sm-2">phone</dt>
             <dd class="col-sm-10">@student.phone</dd>
             <dt class="col-sm-2">photo</dt>
-            <dd class="col-sm-10">@student.photo</dd>
+            <dt>
+                @if (student.photo?.Length > 0)
+                {
+                    <div class="mb-3">
+                        <img style="max-width:200px;height:auto;border:1px solid #dee2e6; border-radius:4px;"
+                             src="data:image;base64,@Convert.ToBase64String(student.photo)"
+                             alt="Student photo" />
+                    </div>
+                }
+            </dt>
             <dt class="col-sm-2">group</dt>
             <dd class="col-sm-10">@student.Group.group_name</dd>
         </dl>

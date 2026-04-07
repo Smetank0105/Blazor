@@ -1,0 +1,42 @@
+﻿@using Microsoft.AspNetCore.Mvc.Rendering
+@using Microsoft.AspNetCore.Html
+
+<div class="mb-3">
+    <label for="photo" class="form-label">photo:</label> 
+    <InputFile id="photo" OnChange="OnPhotoSelected" class="form-control" /> 
+    <ValidationMessage For="() => Student.photo" class="text-danger" /> 
+</div>
+
+@if (Student.photo?.Length > 0)
+{
+    <div class="mb-3">
+        <img style="max-width:200px;height:auto;border:1px solid #dee2e6; border-radius:4px;"
+             src="data:image;base64,@Convert.ToBase64String(Student.photo)"
+             alt="Student photo" />
+    </div>
+}
+
+
+@code {
+    [Parameter]
+    public Models.Student Student { get; set; }
+
+    private IBrowserFile? uploadedFile;
+
+    private async Task OnPhotoSelected(InputFileChangeEventArgs e)
+    {
+        uploadedFile = e.File;
+        if (uploadedFile is null) return;
+
+        const long maxSize = 2 * 1024 * 1024;
+        if (uploadedFile.Size > maxSize)
+        {
+            Student.photo = null;
+            return;
+        }
+
+        using var ms = new MemoryStream();
+        await uploadedFile.OpenReadStream(maxSize).CopyToAsync(ms);
+        Student.photo = ms.ToArray();
+    }
+}
