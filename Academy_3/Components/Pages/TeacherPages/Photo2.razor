@@ -1,0 +1,27 @@
+﻿<h3>Photo</h3>
+
+<div class="photo-area">
+    <img src="data:iamge;base64,@Convert.ToBase64String(Human.photo)" alt="Photo" />
+</div>
+@if(alow_change)
+{
+    <InputFile class="form-control" OnChange="LoadPhoto" />
+}
+
+@code {
+    [Parameter]
+    public Models.Human Human { get; set; } = default!;
+    [Parameter]
+    public bool alow_change { get; set; }
+
+    IBrowserFile url { get; set; }
+
+    async Task LoadPhoto(InputFileChangeEventArgs e)
+    {
+        url = e.File;
+        using MemoryStream ms = new MemoryStream();
+        await url.OpenReadStream(1024*1024*10).CopyToAsync(ms);
+        Human.photo = ms.ToArray();
+
+    }
+}

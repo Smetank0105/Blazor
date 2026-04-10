@@ -75,12 +75,12 @@ else
                         </div>
                     </div>
                     <div style="margin-left:10px;">
-                        @if(Teacher.photo != null)
+                        <Photo2 Human="Teacher" alow_change="true" />
+@*                         @if(Teacher.photo != null)
                         {
-                            <TeacherPhoto data="Teacher.photo" />
-                            @* <img src="data:image;base64, @Convert.ToBase64String(Teacher.photo)" /> *@
-                        }
-                        <InputFile class="form-control" OnChange="LoadPhoto" />
+                            <Photo2 data="Teacher.photo" />
+                        } *@
+                        @* <InputFile class="form-control" OnChange="LoadPhoto" /> *@
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary">Save</button>
@@ -100,16 +100,16 @@ else
     [SupplyParameterFromForm]
     private Teacher? Teacher { get; set; }
 
-    IBrowserFile url { get; set; }
+    // IBrowserFile url { get; set; }
 
-    async Task LoadPhoto(InputFileChangeEventArgs e)
-    {
-        url = e.File;
-        using MemoryStream ms = new MemoryStream();
-        await url.OpenReadStream(1024*1024*10).CopyToAsync(ms);
-        Teacher.photo = ms.ToArray();
+    // async Task LoadPhoto(InputFileChangeEventArgs e)
+    // {
+    //     url = e.File;
+    //     using MemoryStream ms = new MemoryStream();
+    //     await url.OpenReadStream(1024*1024*10).CopyToAsync(ms);
+    //     Teacher.photo = ms.ToArray();
 
-    }
+    // }
 
     protected override async Task OnInitializedAsync()
     {
