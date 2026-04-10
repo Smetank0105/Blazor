@@ -1,0 +1,8 @@
+﻿EditForm {
+    width: 100%;
+}
+
+.human-container {
+    display: flex;
+    justify-content: space-between;
+}
