@@ -1,7 +1,4 @@
-﻿@using Microsoft.AspNetCore.Mvc.Rendering
-@using Microsoft.AspNetCore.Html
-
-<div class="mb-3">
+﻿<div class="mb-3">
     <label for="photo" class="form-label">photo:</label> 
     <InputFile id="photo" OnChange="OnPhotoSelected" class="form-control" /> 
     <ValidationMessage For="() => Student.photo" class="text-danger" /> 
@@ -19,7 +16,7 @@
 
 @code {
     [Parameter]
-    public Models.Student Student { get; set; }
+    public Models.Human Student { get; set; }
 
     private IBrowserFile? uploadedFile;
 
