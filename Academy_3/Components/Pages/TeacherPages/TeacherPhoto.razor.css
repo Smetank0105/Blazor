@@ -1,5 +1,10 @@
-﻿img {
-    width:300px;
-    height:400px;
+﻿.photo-area{
+    max-width:300px;
+    height:auto;
     border:solid 1px;
+}
+img {
+    max-width: 300px;
+    height: auto;
+    border: solid 1px;
 }
