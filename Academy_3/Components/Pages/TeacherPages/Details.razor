@@ -48,6 +48,17 @@
             </dl>
             <Photo2 Human="teacher" alow_change="false" />
         </div>
+        <div>
+            <h5>Количество дисциплин: @teacher.DisciplinesRelations.Count()</h5>
+            <ul>
+                @foreach(TeacherDisciplineRelation dr in teacher.DisciplinesRelations)
+                {
+                    <li>
+                        @dr.Discipline.discipline_name
+                    </li>
+                }
+            </ul>
+        </div>
     }
 </div>
 
@@ -60,7 +71,10 @@
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
-        teacher = await context.Teachers.FirstOrDefaultAsync(m => m.teacher_id == teacher_id);
+        teacher = await context.Teachers
+        .Include(t => t.DisciplinesRelations)
+        .ThenInclude(dr => dr.Discipline)
+        .FirstOrDefaultAsync(m => m.teacher_id == teacher_id);
 
         if (teacher is null)
         {
