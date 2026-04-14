@@ -1,0 +1,77 @@
+﻿@using Microsoft.EntityFrameworkCore
+@using Academy_3.Components.Models
+@inject IDbContextFactory<Academy_3.Data.Academy_3Context> DbFactory
+
+@if(allow_change && Disciplines != null)
+{
+    <h5>Список дисциплин:</h5>
+    <div style="display:flex;">
+    <InputSelect @bind-Value="NewRelation.discipline" class="form-control">
+        @foreach(Discipline d in Disciplines)
+        {
+            <option value="@d.discipline_id">
+                @d.discipline_name
+            </option>
+        }
+    </InputSelect>
+    <button type="button" @onclick="AddRelation" class="btn btn-primary">Add</button>
+    </div>
+}
+<h5>Количество дисциплин: @TDR?.Count()</h5>
+@if(TDR != null)
+{
+    <ul>
+        @foreach(TeacherDisciplineRelation dr in TDR)
+        {
+            <li>
+                <div style="display:flex;justify-content:space-between;">
+                    @dr.Discipline.discipline_name
+                    @if (allow_change)
+                    {
+                        <button type="button" @onclick="()=>DeleteRelation(dr.discipline)" style="border:0px;color:red;background-color:white;">x</button>
+                    }
+                </div>
+            </li>
+        }
+    </ul>
+    
+}
+
+@code {
+    [Parameter]
+    public int teacher_id { get; set; }
+    [Parameter]
+    public bool allow_change { get; set; } = false;
+
+    private TeacherDisciplineRelation NewRelation { get; set; } = new();
+
+    private ICollection<TeacherDisciplineRelation>? TDR;
+    private ICollection<Discipline>? Disciplines;
+
+    protected override async Task OnInitializedAsync()
+    {
+        using (var context = DbFactory.CreateDbContext())
+        {
+            TDR = await context.TeachersDisciplinesRelation.Where(tdr => tdr.teacher == teacher_id).Include(tdr => tdr.Discipline).ToListAsync();
+            Disciplines = await context.Disciplines.ToListAsync();
+        }
+    }
+
+    private async Task AddRelation()
+    {
+        NewRelation.teacher = teacher_id;
+        using var context = DbFactory.CreateDbContext();
+        context.TeachersDisciplinesRelation.Add(NewRelation);
+        await context.SaveChangesAsync();
+        await OnInitializedAsync();
+    }
+
+    private async Task DeleteRelation(int disc)
+    {
+        using var context = DbFactory.CreateDbContext();
+        TeacherDisciplineRelation relation = await context.TeachersDisciplinesRelation.FirstOrDefaultAsync(r => ( r.teacher == teacher_id && r.discipline == disc));
+        context.TeachersDisciplinesRelation.Remove(relation!);
+        await context.SaveChangesAsync();
+        await OnInitializedAsync();
+    }
+}

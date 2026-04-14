@@ -1,6 +1,7 @@
 ﻿@page "/teachers/edit"
 @using Microsoft.EntityFrameworkCore
 @using Academy_3.Components.Models
+@using Academy_3.Components.Pages.TeacherDisciplineRelationPages
 @inject IDbContextFactory<Academy_3.Data.Academy_3Context> DbFactory
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
@@ -18,11 +19,11 @@
 else
 {
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-4" style="width:100%;">
             <EditForm method="post" Model="Teacher" OnValidSubmit="UpdateTeacher" FormName="edit" Enhance>
                 <DataAnnotationsValidator />
                 <ValidationSummary role="alert"/>
-                <div class="human-container">
+                <div class="human-container ">
                     <div>
                         <input type="hidden" name="Teacher.teacher_id" value="@Teacher.teacher_id" />
                         <div class="mb-3">
@@ -74,6 +75,9 @@ else
                             <ValidationMessage For="() => Teacher.rate" class="text-danger" />
                         </div>
                     </div>
+                    <div>
+                        <DisciplinesRelations teacher_id="teacher_id" allow_change="true" />
+                    </div>
                     <div style="margin-left:10px;">
                         <Photo2 Human="Teacher" alow_change="true" />
                     </div>
@@ -94,17 +98,6 @@ else
 
     [SupplyParameterFromForm]
     private Teacher? Teacher { get; set; }
-
-    // IBrowserFile url { get; set; }
-
-    // async Task LoadPhoto(InputFileChangeEventArgs e)
-    // {
-    //     url = e.File;
-    //     using MemoryStream ms = new MemoryStream();
-    //     await url.OpenReadStream(1024*1024*10).CopyToAsync(ms);
-    //     Teacher.photo = ms.ToArray();
-
-    // }
 
     protected override async Task OnInitializedAsync()
     {
