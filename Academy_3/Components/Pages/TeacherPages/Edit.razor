@@ -83,7 +83,10 @@ else
                         <InputSelect @bind-Value="discipline" class="form-control">
                             @foreach(Discipline d in Disciplines)
                             {
-                                <option value="@d.discipline_id">@d.discipline_name</option>
+                                @if(!TDR.Any(tdr => tdr.discipline == d.discipline_id))
+                                {
+                                    <option value="@d.discipline_id">@d.discipline_name</option>
+                                }
                             }
                         </InputSelect>
                         <button type="button" class="btn btn-primary" @onclick="AddDiscipline">Добавить</button>
