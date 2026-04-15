@@ -75,11 +75,31 @@ else
                             <ValidationMessage For="() => Teacher.rate" class="text-danger" />
                         </div>
                     </div>
-                    <div>
-                        <DisciplinesRelations teacher_id="teacher_id" allow_change="true" />
-                    </div>
-                    <div style="margin-left:10px;">
+                    <div  style="align-content:center;height:30vh">
                         <Photo2 Human="Teacher" alow_change="true" />
+                    <div class="mb-3" style="align-content:center;height:30vh">
+                        @* <DisciplinesRelations teacher_id="teacher_id" allow_change="true" /> *@
+                        <h5>Выберите дисциплину:</h5>
+                        <InputSelect @bind-Value="discipline" class="form-control">
+                            @foreach(Discipline d in Disciplines){
+                                <option value="@d.discipline_id">@d.discipline_name</option>
+                            }
+                        </InputSelect>
+                        <button type="button" class="btn btn-primary" @onclick="AddDiscipline">Добавить</button>
+                        <ul>
+                            @foreach(var tdr in NewDisciplines)
+                                {
+                                    <li>@tdr.Discipline.discipline_name</li>
+                                }
+                        </ul>
+                        <hr />
+                        <ul>
+                            @foreach(var tdr in TDR)
+                                {
+                                    <li>@tdr.Discipline.discipline_name</li>
+                                }
+                        </ul>
+                    </div>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary">Save</button>
@@ -99,15 +119,31 @@ else
     [SupplyParameterFromForm]
     private Teacher? Teacher { get; set; }
 
+    ICollection<Discipline> Disciplines { get; set; }
+    ICollection<TeacherDisciplineRelation> TDR { get; set; }
+    List<TeacherDisciplineRelation> NewDisciplines = new List<TeacherDisciplineRelation>();
+
+    int discipline;
+
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
         Teacher ??= await context.Teachers.FirstOrDefaultAsync(m => m.teacher_id == teacher_id);
+        Disciplines = await context.Disciplines.ToListAsync();
+        TDR = await context.TeachersDisciplinesRelation.Where(t => t.teacher == teacher_id).ToListAsync();
 
         if (Teacher is null)
         {
             NavigationManager.NavigateTo("notfound");
         }
+    }
+
+    void AddDiscipline()
+    {
+        TeacherDisciplineRelation newRelation = new TeacherDisciplineRelation { teacher = teacher_id, discipline = discipline };
+        newRelation.Teacher = Teacher;
+        newRelation.Discipline = Disciplines.Where(d => d.discipline_id == discipline).First();
+        NewDisciplines.Add(newRelation);
     }
 
     // To protect from overposting attacks, enable the specific properties you want to bind to.
