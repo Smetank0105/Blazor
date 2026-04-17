@@ -78,23 +78,17 @@ else
                     <div  style="align-content:center;height:30vh">
                         <Photo2 Human="Teacher" alow_change="true" />
                     <div class="mb-3" style="align-content:center;height:30vh">
-                        @* <DisciplinesRelations teacher_id="teacher_id" allow_change="true" /> *@
                         <h5>Выберите дисциплину:</h5>
                         <InputSelect @bind-Value="discipline" class="form-control">
+                            <option selected disabled value="-1" >--- Выберите дисциплину ---</option>
                             @foreach(Discipline d in Disciplines)
                             {
-                                @if(!TDR.Any(tdr => tdr.discipline == d.discipline_id))
-                                {
-                                    <option value="@d.discipline_id">@d.discipline_name</option>
-                                }
+                                @if (TDR.Any(tdr => tdr.discipline == d.discipline_id) || NewDisciplines.Any(nd =>nd.discipline==d.discipline_id))continue;
+                                <option value="@d.discipline_id">@d.discipline_name</option>
                             }
                         </InputSelect>
                         <button type="button" class="btn btn-primary" @onclick="AddDiscipline">Добавить</button>
                         <ul>
-@*                             @foreach(var tdr in NewDisciplines)
-                                {
-                                    <li>@tdr.Discipline.discipline_name</li>
-                                } *@
                             @foreach(var d in Disciplines)
                                 {
                                     @if(NewDisciplines.Any(nd => nd.discipline == d.discipline_id))
@@ -134,7 +128,7 @@ else
     ICollection<TeacherDisciplineRelation> TDR { get; set; }
     List<TeacherDisciplineRelation> NewDisciplines = new List<TeacherDisciplineRelation>();
 
-    int discipline;
+    int discipline = -1;
 
     protected override async Task OnInitializedAsync()
     {
@@ -151,10 +145,11 @@ else
 
     void AddDiscipline()
     {
+        if (discipline == -1) return;
         TeacherDisciplineRelation newRelation = new TeacherDisciplineRelation { teacher = teacher_id, discipline = discipline };
-        // newRelation.Teacher = Teacher;
-        // newRelation.Discipline = Disciplines.Where(d => d.discipline_id == discipline).FirstOrDefault();
+        if (NewDisciplines.Any(d => d.discipline == discipline)) return;
         NewDisciplines.Add(newRelation);
+        discipline = -1;
     }
 
     // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -181,7 +176,7 @@ else
             }
         }
 
-        NavigationManager.NavigateTo("/teachers");
+        NavigationManager.NavigateTo($"/teachers/details?teacher_id={teacher_id}");
     }
 
     private bool TeacherExists(int teacher_id)
