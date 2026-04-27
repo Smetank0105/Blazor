@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Humanizer.Localisation;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Academy_3.Components.Models
@@ -16,6 +18,16 @@ namespace Academy_3.Components.Models
         public string? email { get; set; }
         public string? phone { get; set; }
         public byte[]? photo { get; set; }
-
+        public int Age
+        {
+            get
+            {
+                DateOnly today = DateOnly.FromDateTime(DateTime.Today);
+                int age = today.Year - birth_date.Year;
+                if (birth_date > today.AddYears(-age))
+                    age--;
+                return age;
+            }
+        }
     }
 }
