@@ -20,14 +20,15 @@ namespace Academy_3.Components.Models
         public byte[]? photo { get; set; }
         public int Age
         {
-            get
-            {
-                DateOnly today = DateOnly.FromDateTime(DateTime.Today);
-                int age = today.Year - birth_date.Year;
-                if (birth_date > today.AddYears(-age))
-                    age--;
-                return age;
-            }
+            get => (int)((DateOnly.FromDateTime(DateTime.Now).DayNumber - birth_date.DayNumber) / 365.25);
+            //get
+            //{
+            //    DateOnly today = DateOnly.FromDateTime(DateTime.Today);
+            //    int age = today.Year - birth_date.Year;
+            //    if (birth_date > today.AddYears(-age))
+            //        age--;
+            //    return age;
+            //}
         }
     }
 }
